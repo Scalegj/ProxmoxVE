@@ -150,6 +150,71 @@ EOF
 systemctl enable -q --now gluetun
 msg_ok "Created Service"
 
+if [ "$INSTALL_QBITTORRENT" == "1" ]; then
+fetch_and_deploy_gh_release "qbittorrent" "userdocs/qbittorrent-nox-static" "singlefile" "latest" "/opt/qbittorrent" "x86_64-qbittorrent-nox"
+
+msg_info "Setup qBittorrent-nox"
+mv /opt/qbittorrent/qbittorrent /opt/qbittorrent/qbittorrent-nox
+mkdir -p ~/.config/qBittorrent/
+cat <<EOF >~/.config/qBittorrent/qBittorrent.conf
+[LegalNotice]
+Accepted=true
+
+[Preferences]
+WebUI\Password_PBKDF2="@ByteArray(amjeuVrF3xRbgzqWQmes5A==:XK3/Ra9jUmqUc4RwzCtrhrkQIcYczBl90DJw2rT8DFVTss4nxpoRhvyxhCf87ahVE3SzD8K9lyPdpyUCfmVsUg==)"
+WebUI\Port=8090
+WebUI\UseUPnP=false
+WebUI\Username=admin
+
+[Network]
+PortForwardingEnabled=false
+EOF
+msg_ok "Setup qBittorrent-nox"
+
+msg_info "Creating Service"
+cat <<EOF >/etc/systemd/system/qbittorrent-nox.service
+[Unit]
+Description=qBittorrent client
+After=network.target
+
+[Service]
+Type=simple
+User=root
+ExecStart=/opt/qbittorrent/qbittorrent-nox
+Restart=always
+
+[Install]
+WantedBy=multi-user.target
+EOF
+systemctl enable -q --now qbittorrent-nox
+msg_ok "Created Service"
+fi
+
+if [ "$INSTALL_FLARESOLVERR" == "1" ]; then
+fetch_and_deploy_gh_release "flaresolverr" "FlareSolverr/FlareSolverr" "prebuild" "latest" "/opt/flaresolverr" "flaresolverr_linux_x64.tar.gz"
+
+msg_info "Creating Service"
+cat <<EOF >/etc/systemd/system/flaresolverr.service
+[Unit]
+Description=FlareSolverr
+After=network.target
+[Service]
+SyslogIdentifier=flaresolverr
+Restart=always
+RestartSec=5
+Type=simple
+Environment="LOG_LEVEL=info"
+Environment="CAPTCHA_SOLVER=none"
+WorkingDirectory=/opt/flaresolverr
+ExecStart=/opt/flaresolverr/flaresolverr
+TimeoutStopSec=30
+[Install]
+WantedBy=multi-user.target
+EOF
+systemctl enable -q --now flaresolverr
+msg_ok "Created Service"
+fi
+
 motd_ssh
 customize
 cleanup_lxc
