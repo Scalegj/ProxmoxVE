@@ -45,12 +45,39 @@ for app in $APPS; do
   esac
 done
 
-msg_info "Installing Dependencies"
+APP_DEPENDENCIES=()
+
+if [ "$INSTALL_PROWLARR" = "1" ] || [ "$INSTALL_SONARR" = "1" ] || [ "$INSTALL_RADARR" = "1" ] || [ "$INSTALL_LIDARR" = "1" ]; then
+  APP_DEPENDENCIES+=("sqlite3")
+fi
+
+if [ "$INSTALL_LIDARR" = "1" ]; then
+  APP_DEPENDENCIES+=("libchromaprint-tools" "mediainfo")
+fi
+
+if [ "$INSTALL_FLARESOLVERR" = "1" ]; then
+  APP_DEPENDENCIES+=("apt-transport-https" "xvfb")
+  setup_deb822_repo \
+    "google-chrome" \
+    "https://dl.google.com/linux/linux_signing_key.pub" \
+    "https://dl.google.com/linux/chrome/deb/" \
+    "stable"
+  $STD apt-get update
+  APP_DEPENDENCIES+=("google-chrome-stable")
+fi
+
+if [ ${#APP_DEPENDENCIES[@]} -gt 0 ]; then
+  msg_info "Installing App Dependencies"
+  $STD apt-get install -y "${APP_DEPENDENCIES[@]}"
+  msg_ok "Installed App Dependencies"
+fi
+
+msg_info "Installing Base Dependencies"
 $STD apt install -y \
   openvpn \
   wireguard-tools \
   iptables
-msg_ok "Installed Dependencies"
+msg_ok "Installed Base Dependencies"
 
 msg_info "Configuring iptables"
 $STD update-alternatives --set iptables /usr/sbin/iptables-legacy
