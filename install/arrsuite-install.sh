@@ -13,6 +13,38 @@ setting_up_container
 network_check
 update_os
 
+APPS=$(whiptail --title "Arrsuite Application Selection" --checklist \
+"Choose applications to install:" 15 58 6 \
+"qBittorrent" "BitTorrent client" ON \
+"Prowlarr" "Indexer manager" ON \
+"Sonarr" "TV Show manager" ON \
+"Radarr" "Movie manager" ON \
+"Lidarr" "Music manager" ON \
+"FlareSolverr" "Cloudflare bypass server" ON 3>&1 1>&2 2>&3)
+
+if [ $? -ne 0 ]; then
+  echo -e "\e[1;31m✖ Application selection cancelled. Exiting.\e[0m"
+  exit 1
+fi
+
+INSTALL_QBITTORRENT=0
+INSTALL_PROWLARR=0
+INSTALL_SONARR=0
+INSTALL_RADARR=0
+INSTALL_LIDARR=0
+INSTALL_FLARESOLVERR=0
+
+for app in $APPS; do
+  case $app in
+    '"qBittorrent"') INSTALL_QBITTORRENT=1 ;;
+    '"Prowlarr"') INSTALL_PROWLARR=1 ;;
+    '"Sonarr"') INSTALL_SONARR=1 ;;
+    '"Radarr"') INSTALL_RADARR=1 ;;
+    '"Lidarr"') INSTALL_LIDARR=1 ;;
+    '"FlareSolverr"') INSTALL_FLARESOLVERR=1 ;;
+  esac
+done
+
 msg_info "Installing Dependencies"
 $STD apt install -y \
   openvpn \
