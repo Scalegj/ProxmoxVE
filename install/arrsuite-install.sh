@@ -215,6 +215,119 @@ systemctl enable -q --now flaresolverr
 msg_ok "Created Service"
 fi
 
+if [ "$INSTALL_PROWLARR" == "1" ]; then
+fetch_and_deploy_gh_release "prowlarr" "Prowlarr/Prowlarr" "prebuild" "latest" "/opt/Prowlarr" "Prowlarr.master*linux-core-x64.tar.gz"
+
+msg_info "Configuring Prowlarr"
+mkdir -p /var/lib/prowlarr/
+chmod 775 /var/lib/prowlarr/ /opt/Prowlarr
+msg_ok "Configured Prowlarr"
+
+msg_info "Creating Service"
+cat <<EOF >/etc/systemd/system/prowlarr.service
+[Unit]
+Description=Prowlarr Daemon
+After=syslog.target network.target
+
+[Service]
+UMask=0002
+Type=simple
+ExecStart=/opt/Prowlarr/Prowlarr -nobrowser -data=/var/lib/prowlarr/
+TimeoutStopSec=20
+KillMode=process
+Restart=on-failure
+
+[Install]
+WantedBy=multi-user.target
+EOF
+systemctl enable -q --now prowlarr
+msg_ok "Created Service"
+fi
+
+if [ "$INSTALL_SONARR" == "1" ]; then
+fetch_and_deploy_gh_release "Sonarr" "Sonarr/Sonarr" "prebuild" "latest" "/opt/Sonarr" "Sonarr.main.*.linux-x64.tar.gz"
+mkdir -p /var/lib/sonarr/
+chmod 775 /var/lib/sonarr/
+
+msg_info "Creating Service"
+cat <<EOF >/etc/systemd/system/sonarr.service
+[Unit]
+Description=Sonarr Daemon
+After=syslog.target network.target
+
+[Service]
+Type=simple
+ExecStart=/opt/Sonarr/Sonarr -nobrowser -data=/var/lib/sonarr/
+TimeoutStopSec=20
+KillMode=process
+Restart=on-failure
+
+[Install]
+WantedBy=multi-user.target
+EOF
+systemctl enable -q --now sonarr
+msg_ok "Created Service"
+fi
+
+if [ "$INSTALL_RADARR" == "1" ]; then
+fetch_and_deploy_gh_release "Radarr" "Radarr/Radarr" "prebuild" "latest" "/opt/Radarr" "Radarr.master*linux-core-x64.tar.gz"
+
+msg_info "Configuring Radarr"
+mkdir -p /var/lib/radarr/
+chmod 775 /var/lib/radarr/ /opt/Radarr/
+msg_ok "Configured Radarr"
+
+msg_info "Creating Service"
+cat <<EOF >/etc/systemd/system/radarr.service
+[Unit]
+Description=Radarr Daemon
+After=syslog.target network.target
+
+[Service]
+UMask=0002
+Type=simple
+ExecStart=/opt/Radarr/Radarr -nobrowser -data=/var/lib/radarr/
+TimeoutStopSec=20
+KillMode=process
+Restart=on-failure
+
+[Install]
+WantedBy=multi-user.target
+EOF
+systemctl enable -q --now radarr
+msg_ok "Created Service"
+fi
+
+if [ "$INSTALL_LIDARR" == "1" ]; then
+fetch_and_deploy_gh_release "lidarr" "Lidarr/Lidarr" "prebuild" "latest" "/opt/Lidarr" "Lidarr.master*linux-core-x64.tar.gz"
+
+msg_info "Configuring Lidarr"
+mkdir -p /var/lib/lidarr/
+chmod 775 /var/lib/lidarr/
+chmod 775 /opt/Lidarr
+msg_ok "Configured Lidarr"
+
+msg_info "Creating Service"
+cat <<EOF >/etc/systemd/system/lidarr.service
+[Unit]
+Description=Lidarr Daemon
+After=syslog.target network.target
+
+[Service]
+UMask=0002
+Type=simple
+ExecStart=/opt/Lidarr/Lidarr -nobrowser -data=/var/lib/lidarr/
+TimeoutStopSec=20
+KillMode=process
+Restart=on-failure
+
+[Install]
+WantedBy=multi-user.target
+EOF
+systemctl enable -q --now lidarr
+msg_ok "Created Service"
+fi
+
 motd_ssh
 customize
 cleanup_lxc
