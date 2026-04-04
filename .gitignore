@@ -68,3 +68,24 @@ json/.vscode/
 .git/
 .gitignore
 .vscode/settings.json
+
+# ── GSD baseline (auto-generated) ──
+.gsd
+.gsd-id
+*~
+.idea/
+.vscode/
+*.code-workspace
+.env
+.env.*
+!.env.example
+node_modules/
+.next/
+dist/
+build/
+.venv/
+target/
+vendor/
+coverage/
+.cache/
+tmp/
