@@ -175,7 +175,8 @@ msg_info "Creating Service"
 cat <<EOF >/etc/systemd/system/qbittorrent-nox.service
 [Unit]
 Description=qBittorrent client
-After=network.target
+After=network.target gluetun.service
+BindsTo=gluetun.service
 
 [Service]
 Type=simple
@@ -197,7 +198,8 @@ msg_info "Creating Service"
 cat <<EOF >/etc/systemd/system/flaresolverr.service
 [Unit]
 Description=FlareSolverr
-After=network.target
+After=network.target gluetun.service
+BindsTo=gluetun.service
 [Service]
 SyslogIdentifier=flaresolverr
 Restart=always
@@ -227,7 +229,8 @@ msg_info "Creating Service"
 cat <<EOF >/etc/systemd/system/prowlarr.service
 [Unit]
 Description=Prowlarr Daemon
-After=syslog.target network.target
+After=syslog.target network.target gluetun.service
+BindsTo=gluetun.service
 
 [Service]
 UMask=0002
@@ -253,7 +256,8 @@ msg_info "Creating Service"
 cat <<EOF >/etc/systemd/system/sonarr.service
 [Unit]
 Description=Sonarr Daemon
-After=syslog.target network.target
+After=syslog.target network.target gluetun.service
+BindsTo=gluetun.service
 
 [Service]
 Type=simple
@@ -281,7 +285,8 @@ msg_info "Creating Service"
 cat <<EOF >/etc/systemd/system/radarr.service
 [Unit]
 Description=Radarr Daemon
-After=syslog.target network.target
+After=syslog.target network.target gluetun.service
+BindsTo=gluetun.service
 
 [Service]
 UMask=0002
@@ -311,7 +316,8 @@ msg_info "Creating Service"
 cat <<EOF >/etc/systemd/system/lidarr.service
 [Unit]
 Description=Lidarr Daemon
-After=syslog.target network.target
+After=syslog.target network.target gluetun.service
+BindsTo=gluetun.service
 
 [Service]
 UMask=0002
